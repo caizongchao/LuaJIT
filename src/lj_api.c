@@ -199,6 +199,12 @@ LUA_API void lua_pushvalue(lua_State *L, int idx)
   incr_top(L);
 }
 
+LUA_API void lua_pushtvalue(lua_State *L, int64_t tv)
+{
+  copyTV(L, L->top, (TValue *)&tv);
+  incr_top(L);
+}
+
 /* -- Stack getters ------------------------------------------------------- */
 
 LUA_API int lua_type(lua_State *L, int idx)

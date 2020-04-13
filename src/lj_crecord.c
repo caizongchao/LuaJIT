@@ -646,7 +646,15 @@ static TRef crec_ct_tv(jit_State *J, CType *d, TRef dp, TRef sp, cTValue *sval)
     sp = emitir(IRT(IR_BAND, IRT_P64), sp,
 		lj_ir_kint64(J, U64x(00007fff,ffffffff)));
 #endif
-  } else {  /* NYI: tref_istab(sp). */
+  } 
+  else if(tref_isfunc(sp)) {
+		int64_t n = (int64_t)(*((int64_t *)sval));
+
+		sp = lj_ir_kint64(J, n);
+    sid = CTID_INT64;
+    svisnz = (void *)(intptr_t)(n != 0);
+  }
+  else {  /* NYI: tref_istab(sp). */
     IRType t;
     sid = argv2cdata(J, sp, sval)->ctypeid;
     s = ctype_raw(cts, sid);

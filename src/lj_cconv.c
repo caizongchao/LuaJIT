@@ -613,12 +613,17 @@ void lj_cconv_ct_tv(CTState *cts, CType *d,
   } else if (tvislightud(o)) {
     tmpptr = lightudV(o);
   } else if (tvisfunc(o)) {
-    void *p = lj_ccallback_new(cts, d, funcV(o));
-    if (p) {
-      *(void **)dp = p;
-      return;
-    }
-    goto err_conv;
+    tmpptr = (void *)(*((int64_t *)o));
+    // sp = (uint8_t *)&o->i;
+    sid = CTID_INT64;
+    flags |= CCF_FROMTV;
+
+    // void *p = lj_ccallback_new(cts, d, funcV(o));
+    // if (p) {
+    //   *(void **)dp = p;
+    //   return;
+    // }
+    // goto err_conv;
   } else {
   err_conv:
     cconv_err_convtv(cts, d, o, flags);

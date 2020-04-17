@@ -199,10 +199,29 @@ LUA_API void lua_pushvalue(lua_State *L, int idx)
   incr_top(L);
 }
 
-LUA_API void lua_pushtvalue(lua_State *L, int64_t tv)
+LUA_API void lua_pushtvalue(lua_State *L, intptr_t tv)
 {
   copyTV(L, L->top, (TValue *)&tv);
   incr_top(L);
+}
+
+LUA_API void * lua_running(lua_State* L)
+{
+    return (&gcref(G(L)->cur_L)->th);
+}
+
+LUA_API void lua_pin(GChead* gcref)
+{
+    if (gcref) {
+        gcref->marked |= LJ_GC_FIXED;
+    }
+}
+
+LUA_API void lua_unpin(GChead* gcref)
+{
+    if (gcref) {
+        gcref->marked &= ~LJ_GC_FIXED;
+    }
 }
 
 /* -- Stack getters ------------------------------------------------------- */

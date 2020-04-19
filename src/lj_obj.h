@@ -615,6 +615,7 @@ typedef struct global_State {
   lua_Hook hookf;	/* Hook function. */
   lua_CFunction wrapf;	/* Wrapper for C function calls. */
   lua_CFunction panic;	/* Called as a last resort for errors. */
+  lua_CFunction threadcallback; /* called when thread status changed */
   BCIns bc_cfunc_int;	/* Bytecode for internal C function calls. */
   BCIns bc_cfunc_ext;	/* Bytecode for external C function calls. */
   GCRef cur_L;		/* Currently executing lua_State. */

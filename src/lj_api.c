@@ -232,6 +232,10 @@ LUA_API void lua_unpin(GChead* gcref)
     }
 }
 
+LUA_API void lua_setthreadcallback(lua_State * L, lua_CFunction cb) {
+    G(L)->threadcallback = cb;
+}
+
 /* -- Stack getters ------------------------------------------------------- */
 
 LUA_API int lua_type(lua_State *L, int idx)
@@ -1252,10 +1256,18 @@ LUA_API int lua_yield(lua_State *L, int nresults)
 
 LUA_API int lua_resume(lua_State *L, int nargs)
 {
-  if (L->cframe == NULL && L->status <= LUA_YIELD)
-    return lj_vm_resume(L,
+  if (L->cframe == NULL && L->status <= LUA_YIELD) {
+    int r = lj_vm_resume(L,
       L->status == LUA_OK ? api_call_base(L, nargs) : L->top - nargs,
       0, 0);
+
+    lua_CFunction cb = G(L)->threadcallback;
+
+    if( cb ) cb(L);
+
+    return r;
+  }
+
   L->top = L->base;
   setstrV(L, L->top, lj_err_str(L, LJ_ERR_COSUSP));
   incr_top(L);

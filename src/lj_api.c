@@ -199,10 +199,15 @@ LUA_API void lua_pushvalue(lua_State *L, int idx)
   incr_top(L);
 }
 
-LUA_API void lua_pushtvalue(lua_State *L, intptr_t tv)
+LUA_API void lua_pushtvalue(lua_State *L, int64_t tv)
 {
   copyTV(L, L->top, (TValue *)&tv);
   incr_top(L);
+}
+
+LUA_API int64_t lua_totvalue(lua_State* L, int idx)
+{
+    return (int64_t)(index2adr(L, idx)->u64);
 }
 
 LUA_API void lua_pushuserdata(lua_State* L, void * p)

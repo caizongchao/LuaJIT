@@ -205,6 +205,14 @@ LUA_API void lua_pushtvalue(lua_State *L, intptr_t tv)
   incr_top(L);
 }
 
+LUA_API void lua_pushuserdata(lua_State* L, void * p)
+{
+    GCudata* ud = ((GCudata *)p) - 1;
+
+    setudataV(L, L->top, ud);
+    incr_top(L);
+}
+
 LUA_API void * lua_running(lua_State* L)
 {
     return (&gcref(G(L)->cur_L)->th);

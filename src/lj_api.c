@@ -218,23 +218,58 @@ LUA_API void lua_pushuserdata(lua_State* L, void * p)
     incr_top(L);
 }
 
-LUA_API void * lua_running(lua_State* L)
+LUA_API void lua_pushglobaltable(lua_State * L) {
+    settabV(L, L->top, tabref(L->env));
+    incr_top(L);
+}
+
+LUA_API lua_State * lua_mainthread(lua_State * L) {
+    return mainthread(G(L));
+}
+
+LUA_API lua_State * lua_curthread(lua_State* L)
 {
     return (&gcref(G(L)->cur_L)->th);
 }
 
-LUA_API void lua_pin(GChead* gcref)
-{
-    if (gcref) {
-        gcref->marked |= LJ_GC_FIXED;
-    }
+LUA_API int lua_pintvalue(lua_Integer v) {
+    TValue * tv = (TValue *)(&v);
+
+    lua_assert(tvisgcv(tv));
+
+    return lua_pinobj( &(gcval(tv)->gch) );
 }
 
-LUA_API void lua_unpin(GChead* gcref)
+LUA_API int lua_unpintvalue(lua_Integer v) {
+    TValue * tv = (TValue *)(&v); 
+
+    lua_assert(tvisgcv(tv));
+
+    return lua_unpinobj(&(gcval(tv)->gch));
+}
+
+LUA_API int lua_pinobj(GChead* gcref)
 {
-    if (gcref) {
+    lua_assert(gcref->pinrefc != 0xcdcdcdcd);
+
+    if( (gcref->pinrefc == 0) && ((gcref->marked & LJ_GC_FIXED) || (gcref->marked & LJ_GC_SFIXED)) ) {
+        ++gcref->pinrefc;
+    }
+
+    ++gcref->pinrefc;
+
+    gcref->marked |= LJ_GC_FIXED;
+
+    return 0;
+}
+
+LUA_API int lua_unpinobj(GChead* gcref)
+{
+    if( --gcref->pinrefc == 0 ) {
         gcref->marked &= ~LJ_GC_FIXED;
     }
+
+    return 0;
 }
 
 LUA_API void lua_setthreadcallback(lua_State * L, lua_CFunction cb) {
@@ -834,6 +869,10 @@ LUA_API void lua_gettable(lua_State *L, int idx)
   copyTV(L, L->top-1, v);
 }
 
+LUA_API void lua_geti(lua_State * L, int idx, lua_Integer i) {
+    lua_pushinteger(L, i); lua_gettable(L, idx);
+}
+
 LUA_API void lua_getfield(lua_State *L, int idx, const char *k)
 {
   cTValue *v, *t = index2adr(L, idx);
@@ -1003,6 +1042,11 @@ LUA_API void lua_settable(lua_State *L, int idx)
     L->top -= 3+LJ_FR2;
   }
 }
+
+LUA_API void lua_seti(lua_State * L, int idx, lua_Integer n) {
+    lua_pushinteger(L, n); lua_settable(L, idx);
+}
+
 
 LUA_API void lua_setfield(lua_State *L, int idx, const char *k)
 {

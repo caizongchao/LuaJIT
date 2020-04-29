@@ -839,6 +839,7 @@ void * LJ_FASTCALL lj_mem_newgco(lua_State *L, GCSize size)
   setgcrefr(o->gch.nextgc, g->gc.root);
   setgcref(g->gc.root, o);
   newwhite(g, o);
+  o->gch.pinrefc = 0;
   return o;
 }
 

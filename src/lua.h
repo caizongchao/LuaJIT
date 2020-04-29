@@ -374,6 +374,23 @@ struct lua_Debug {
 
 /* }====================================================================== */
 
+/* custom api */
+LUA_API void lua_geti(lua_State * L, int idx, lua_Integer i);
+LUA_API void lua_seti(lua_State * L, int idx, lua_Integer n);
+
+LUA_API lua_State * lua_mainthread(lua_State * L);
+LUA_API lua_State * lua_curthread(lua_State * L);
+LUA_API void lua_pushtvalue(lua_State* L, lua_Integer tv);
+LUA_API void lua_pushuserdata(lua_State* L, void* p);
+LUA_API void lua_pushglobaltable(lua_State * L);
+LUA_API lua_Integer lua_totvalue(lua_State * L, int idx);
+LUA_API int lua_pintvalue(lua_Integer tv);
+LUA_API int lua_unpintvalue(lua_Integer tv);
+LUA_API int lua_pinobj(void* obj);
+LUA_API int lua_unpinobj(void* obj);
+LUA_API void lua_setthreadcallback(lua_State* L, lua_CFunction cb);
+
+
 
 /******************************************************************************
 * Copyright (C) 1994-2008 Lua.org, PUC-Rio.  All rights reserved.

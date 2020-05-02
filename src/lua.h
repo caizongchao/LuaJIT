@@ -390,7 +390,12 @@ LUA_API int lua_pinobj(void* obj);
 LUA_API int lua_unpinobj(void* obj);
 LUA_API void lua_setthreadcallback(lua_State* L, lua_CFunction cb);
 
+LUA_API int lux_isstring(lua_State * L, int idx);
+LUA_API int lux_isnumber(lua_State * L, int idx);
+LUA_API const char * lux_tolstring(lua_State * L, int idx, size_t * len);
+LUA_API lua_Number lux_tonumber(lua_State * L, int idx);
 
+#define lux_tostring(L, idx) lux_tolstring(L, idx, 0)
 
 /******************************************************************************
 * Copyright (C) 1994-2008 Lua.org, PUC-Rio.  All rights reserved.

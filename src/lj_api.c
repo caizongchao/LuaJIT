@@ -276,6 +276,37 @@ LUA_API void lua_setthreadcallback(lua_State * L, lua_CFunction cb) {
     G(L)->threadcallback = cb;
 }
 
+LUA_API int lux_isstring(lua_State * L, int idx) {
+    cTValue * o = index2adr(L, idx); return tvisstr(o);
+}
+
+LUA_API int lux_isnumber(lua_State * L, int idx) {
+    cTValue * o = index2adr(L, idx); return tvisnumber(o);
+}
+
+LUA_API const char * lux_tolstring(lua_State * L, int idx, size_t * len) {
+    TValue * o = index2adr(L, idx);
+    
+    if( tvisstr(o) ) {
+        GCstr * s = strV(o); if( len != NULL ) {
+            *len = s->len;
+        }
+
+        return strdata(s);
+    }
+
+    return NULL;
+}
+
+LUA_API lua_Number lux_tonumber(lua_State * L, int idx) {
+    cTValue * o = index2adr(L, idx); if( tvisnumber(o) ) {
+        return numberVnum(o);
+    }
+        
+    return 0;
+}
+
+
 /* -- Stack getters ------------------------------------------------------- */
 
 LUA_API int lua_type(lua_State *L, int idx)
